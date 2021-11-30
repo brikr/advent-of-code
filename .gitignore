@@ -1,0 +1,5 @@
+# 3p libraries
+node_modules/
+# built files
+build/
+
