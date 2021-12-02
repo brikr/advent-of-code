@@ -23,10 +23,6 @@ function part1(instructions: Instruction[]): number {
       case 'up':
         depth -= amount;
         break;
-      default:
-        // wtf
-        console.log('wtf');
-        break;
     }
   });
   return hPos * depth;
@@ -48,10 +44,6 @@ function part2(instructions: Instruction[]): number {
         break;
       case 'up':
         aim -= amount;
-        break;
-      default:
-        // wtf
-        console.log('wtf');
         break;
     }
   });
