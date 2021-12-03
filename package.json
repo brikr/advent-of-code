@@ -5,12 +5,15 @@
     "compile": "tsc",
     "start": "npm run compile && node build/day$npm_config_solution/day$npm_config_solution.js",
     "start:dev": "nodemon -L --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/day${npm_config_solution}/day${npm_config_solution}.ts\"",
+    "day": "ts-node src/runDay.ts",
+    "day:dev": "nodemon -L --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/runDay.ts\"",
     "fix": "gts fix",
     "prepare": "npm run compile",
     "pretest": "npm run compile",
     "posttest": "npm run lint"
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

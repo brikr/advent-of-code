@@ -1,5 +1,8 @@
 # 3p libraries
 node_modules/
+
 # built files
 build/
 
+# environment file that contains secrets
+environment.ts
