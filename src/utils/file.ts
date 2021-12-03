@@ -1,4 +1,5 @@
 import {createReadStream, readFileSync} from 'fs';
+import {last} from 'lodash';
 import {createInterface} from 'readline';
 
 export async function fileMap<T>(
@@ -29,7 +30,14 @@ export function fileMapSync<T>(
   filename: string,
   iteratee: (line: string, index: number) => T
 ): T[] {
-  return readFileSync(filename, {encoding: 'utf8', flag: 'r'})
-    .split('\n')
-    .map(iteratee);
+  const lines = readFileSync(filename, {encoding: 'utf8', flag: 'r'}).split(
+    '\n'
+  );
+
+  // if the last line is empty, ignore it
+  if (!last(lines)) {
+    lines.pop();
+  }
+
+  return lines.map(iteratee);
 }
