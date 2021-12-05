@@ -1,5 +1,6 @@
 import axios from 'axios';
 import {existsSync, mkdirSync, readFileSync, writeFileSync} from 'fs';
+import {unescape} from 'lodash';
 import {environment} from '../environment';
 import {dayToString} from './dayString';
 
@@ -47,7 +48,7 @@ export async function fetchInput(day: number, force = false) {
     console.debug(
       `Found a probable sample block for day ${day}. Saving to input-test.txt.`
     );
-    writeFileSync(`src/day${dayString}/input-test.txt`, match);
+    writeFileSync(`src/day${dayString}/input-test.txt`, unescape(match));
   } else {
     console.debug(
       `Couldn't find a good sample block for day ${day}. Making an empty input-test.txt for you.`
