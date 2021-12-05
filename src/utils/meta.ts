@@ -49,7 +49,10 @@ export async function fetchInput(day: number, force = false) {
     );
     writeFileSync(`src/day${dayString}/input-test.txt`, match);
   } else {
-    console.debug(`Couldn't find a good sample block for day ${day}.`);
+    console.debug(
+      `Couldn't find a good sample block for day ${day}. Making an empty input-test.txt for you.`
+    );
+    writeFileSync(`src/day${dayString}/input-test.txt`, '');
   }
 }
 
