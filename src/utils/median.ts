@@ -1,7 +1,7 @@
 export function median(values: number[]): number {
   if (values.length === 0) throw new Error('No inputs');
 
-  values.sort();
+  values.sort((a, b) => a - b);
 
   const half = Math.floor(values.length / 2);
 
