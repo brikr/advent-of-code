@@ -22,10 +22,6 @@ export async function fileMap<T>(
   return values;
 }
 
-export function fileLines(filename: string): string[] {
-  return fileMapSync(filename, line => line);
-}
-
 export function fileMapSync<T>(
   filename: string,
   iteratee: (line: string, index: number) => T
@@ -40,4 +36,16 @@ export function fileMapSync<T>(
   }
 
   return lines.map(iteratee);
+}
+
+export function fileLines(filename: string): string[] {
+  return fileMapSync(filename, line => line);
+}
+
+export function fileAsGrid<T>(
+  filename: string,
+  castFunction: (input: string) => T,
+  delimeter = ''
+): T[][] {
+  return fileMapSync(filename, line => line.split(delimeter).map(castFunction));
 }
