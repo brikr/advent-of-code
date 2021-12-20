@@ -9,5 +9,5 @@ function part2(lines: string[]): number {
   return 0;
 }
 
-const lines = fileMapSync('src/dayDAY_STRING/input.txt', line => line);
+const lines = fileMapSync('src/dayDAY_STRING/input-test.txt', line => line);
 printSolution(part1(lines), part2(lines));
