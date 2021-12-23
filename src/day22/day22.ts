@@ -3,6 +3,7 @@ import {
   areaFromString,
   areaInArea,
   areasOverlap,
+  AreaStorage,
   areaToString,
   getFacesFromArea,
   getPlaneFromFace,
@@ -91,18 +92,9 @@ function cullUntilDone(areas: Set<string>): Set<string> {
   return areas;
 }
 
-function getTotalVolume(cubes: Set<string>): number {
-  let totalVolume = 0;
-  for (const cubeString of cubes) {
-    const cube = areaFromString(cubeString);
-    totalVolume += getVolume(cube);
-  }
-  return totalVolume;
-}
-
 function part2(instructions: Instruction[]): number {
   // key: serialized area
-  let onCubes = new Set<string>();
+  const onCubes = new AreaStorage();
 
   for (const instruction of instructions) {
     console.log(
@@ -114,29 +106,28 @@ function part2(instructions: Instruction[]): number {
     for (const [idx, face] of getFacesFromArea(instruction.area).entries()) {
       // console.log('  splitting all cubes on face', areaToString(face));
       const side = idx < 3 ? 'over' : 'under';
-      const newOnCubes = new Set<string>();
-      for (const cubeString of onCubes) {
-        const cube = areaFromString(cubeString);
+      for (const cube of onCubes.getNearby(instruction.area)) {
+        // remove the original cube (might add it back later)
+        onCubes.delete(cube);
         if (areasOverlap(cube, face)) {
           // splitting needed
           // console.log('    splitting', cubeString);
           const plane = getPlaneFromFace(face);
           const newCubes = splitArea(cube, plane, side);
           for (const newCube of newCubes) {
-            newOnCubes.add(areaToString(newCube));
+            // add the split cubes
+            onCubes.add(newCube);
           }
           // console.log('      result', newCubes.map(areaToString).join(';'));
         } else {
-          // no split
+          // no split. add the original cube back to storage
           // console.log('    not splitting', cubeString);
-          newOnCubes.add(cubeString);
+          onCubes.add(cube);
         }
       }
-      onCubes = newOnCubes;
     }
     // for each cube, if it's completely inside the new cube, delete it
-    for (const cubeString of onCubes) {
-      const cube = areaFromString(cubeString);
+    for (const cube of onCubes.getNearby(instruction.area)) {
       // console.log(
       //   '  checking if',
       //   cubeString,
@@ -145,19 +136,19 @@ function part2(instructions: Instruction[]): number {
       // );
       if (areaInArea(cube, instruction.area)) {
         // console.log('    it is');
-        onCubes.delete(cubeString);
+        onCubes.delete(cube);
       }
     }
     // if the new cube is lit, add it to the cube collection
     if (instruction.state) {
-      onCubes.add(areaToString(instruction.area));
+      onCubes.add(instruction.area);
     }
 
-    console.log('  total cubes', onCubes.size);
+    // console.log('  total cubes', onCubes.size);
     // console.log('  total cells', getTotalVolume(onCubes));
   }
 
-  return getTotalVolume(onCubes);
+  return onCubes.getTotalVolume();
 }
 
 const instructions = fileMapSync<Instruction>('src/day22/input.txt', line => {

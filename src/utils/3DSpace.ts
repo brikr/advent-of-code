@@ -1,6 +1,5 @@
 import {cloneDeep, inRange, isEqual} from 'lodash';
-import {MapWithDefault} from './mapWithDefault';
-import {Range} from './range';
+import {isRangeContiguous, Range} from './range';
 
 type Axis = 'x' | 'y' | 'z';
 
@@ -250,11 +249,6 @@ export function splitArea(
   return [under, over];
 }
 
-// true if range1 and range2 perfectly touch and do not overlap
-export function isRangeContiguous(range1: Range, range2: Range) {
-  return range1.max === range2.min - 1 || range2.max === range1.min - 1;
-}
-
 // if two areas are perfectly touching (two axes match, third axis is contiguous with no overlap), return a single area
 // that contains the two old areas
 // if they aren't perfectly touching, return the original two areas
@@ -309,7 +303,7 @@ export class AreaStorage {
   // key: subCube coords e.g. 0,0,0 or 0,0,1, value: set of serialized areas that cross that subcuboid
   private subCubes = new Map<string, Set<string>>();
 
-  constructor(subCuboidSize = 100) {
+  constructor(subCuboidSize = 1000) {
     this.subCubeSize = subCuboidSize;
   }
 
@@ -324,18 +318,24 @@ export class AreaStorage {
     for (let x = lowX; x <= highX; x++) {
       for (let y = lowY; y <= highY; y++) {
         for (let z = lowZ; z <= highZ; z++) {
-          const set = this.subCubes.get(`${x},${y},${z}`) ?? new Set<string>();
+          const key = `${x},${y},${z}`;
+          let set = this.subCubes.get(key);
+          if (set === undefined) {
+            set = new Set<string>();
+            this.subCubes.set(key, set);
+          }
           containingSubCubes.push(set);
         }
       }
     }
-    return [];
+    return containingSubCubes;
   }
 
   add(area: Area3D) {
     for (const subCube of this.getSubCubesFor(area)) {
       subCube.add(areaToString(area));
     }
+    // console.log(this.subCubes);
   }
 
   delete(area: Area3D) {
@@ -364,5 +364,13 @@ export class AreaStorage {
     }
 
     return [...allCubes].map(areaFromString);
+  }
+
+  getTotalVolume(): number {
+    let totalVolume = 0;
+    for (const cube of this.getAll()) {
+      totalVolume += getVolume(cube);
+    }
+    return totalVolume;
   }
 }
