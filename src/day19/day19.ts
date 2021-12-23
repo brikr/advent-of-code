@@ -1,13 +1,7 @@
-import {sortBy} from 'lodash';
+import {Point3D} from '../utils/3dspace';
 import {fileLines} from '../utils/file';
 import {MapWithDefault} from '../utils/mapWithDefault';
 import {printSolution} from '../utils/printSolution';
-
-interface Point3D {
-  x: number;
-  y: number;
-  z: number;
-}
 
 function add(p1: Point3D, p2: Point3D): Point3D {
   return {
