@@ -1,4 +1,4 @@
-import {isNumber, times} from 'lodash';
+import {sumBy} from 'lodash';
 import {fileMapSync} from '../utils/file';
 import {printSolution} from '../utils/printSolution';
 
@@ -55,135 +55,162 @@ function executeInstruction(
   }
 }
 
-// : '99111111111111'.split('').map(Number),
-
-function part1(lines: string[]): number {
-  const alu: ALU = {
-    variables: {},
-    input: '29977181511299'.split('').map(Number),
-  };
-
-  for (const line of lines) {
-    // console.log('executing', line);
+function runNthDigitSlice(lines: string[], alu: ALU, n: number) {
+  for (const line of lines.slice(n * 18, n * 18 + 18)) {
     const [instruction, o1, o2] = line.split(' ');
-    if (instruction === 'inp') {
-      console.log(alu.variables);
-    }
     executeInstruction(alu, instruction as Instruction, o1, o2);
   }
-  console.log(alu.variables);
+}
 
-  // const xZeroesFirstStep: string[] = [];
-  // times(8889, step => {
-  //   const firstFourInput = String(9999 - step);
-  //   if (firstFourInput.includes('0')) {
-  //     return;
-  //   }
+interface State {
+  aluZ: number;
+  input: number[];
+}
 
-  //   const alu: ALU = {
-  //     variables: {},
-  //     input: firstFourInput.split('').map(Number),
-  //   };
+function part1(lines: string[]): number {
+  const highestInputForZByInputLength = new Array(14).fill(undefined).map(
+    // key: z, value: highest input that produced that z
+    () => new Map<number, number[]>()
+  );
 
-  //   for (const line of lines.slice(0, 72)) {
-  //     // console.log('executing', line);
-  //     const [instruction, o1, o2] = line.split(' ');
-  //     if (instruction === 'inp') {
-  //       // console.log(alu.variables);
-  //     }
-  //     executeInstruction(alu, instruction as Instruction, o1, o2);
-  //     // console.log(alu);
-  //   }
-  //   // console.log(alu.variables);
+  const stack: State[] = [];
+  const initialState: State = {
+    aluZ: 0,
+    input: [],
+  };
+  stack.push(initialState);
 
-  //   if (alu.variables.x === 0) {
-  //     xZeroesFirstStep.push(firstFourInput);
-  //     console.log('checking further down', firstFourInput);
-  //     times(8889, step => {
-  //       const firstEightInput = firstFourInput + String(9999 - step);
-  //       if (firstEightInput.includes('0')) {
-  //         return;
-  //       }
+  while (stack.length > 0) {
+    const curr = stack.pop()!;
 
-  //       const alu: ALU = {
-  //         variables: {},
-  //         input: firstEightInput.split('').map(Number),
-  //       };
+    // console.log('checking state', curr);
 
-  //       for (const line of lines.slice(0, 144)) {
-  //         // console.log('executing', line);
-  //         const [instruction, o1, o2] = line.split(' ');
-  //         if (instruction === 'inp') {
-  //           // console.log(alu.variables);
-  //         }
-  //         executeInstruction(alu, instruction as Instruction, o1, o2);
-  //         // console.log(alu);
-  //       }
-  //       // console.log(alu.variables);
+    if (curr.input.length === 14) {
+      // check done
+      if (curr.aluZ === 0) {
+        return Number(curr.input.join(''));
+      }
+      continue;
+    }
 
-  //       if (alu.variables.x === 0) {
-  //         console.log('checking further down', firstEightInput);
-  //         times(889, step => {
-  //           const firstElevenInput = firstEightInput + String(999 - step);
-  //           if (firstElevenInput.includes('0')) {
-  //             return;
-  //           }
+    let next: State[] = [];
 
-  //           const alu: ALU = {
-  //             variables: {},
-  //             input: firstElevenInput.split('').map(Number),
-  //           };
+    for (let newDigit = 1; newDigit <= 9; newDigit++) {
+      const newInput = [...curr.input, newDigit];
+      const alu: ALU = {
+        variables: {z: curr.aluZ},
+        input: [newDigit],
+      };
+      runNthDigitSlice(lines, alu, curr.input.length);
 
-  //           for (const line of lines.slice(0, 198)) {
-  //             // console.log('executing', line);
-  //             const [instruction, o1, o2] = line.split(' ');
-  //             if (instruction === 'inp') {
-  //               // console.log(alu.variables);
-  //             }
-  //             executeInstruction(alu, instruction as Instruction, o1, o2);
-  //             // console.log(alu);
-  //           }
+      next.push({aluZ: alu.variables.z, input: newInput});
+    }
 
-  //           if (alu.variables.x === 0) {
-  //             console.log('checking further down', firstElevenInput);
-  //             times(889, step => {
-  //               const fullInput = firstElevenInput + String(999 - step);
-  //               if (fullInput.includes('0')) {
-  //                 return;
-  //               }
+    next = next.filter(state => {
+      // cull next states that we have better candidates for
+      const zMap = highestInputForZByInputLength[state.input.length - 1];
+      // console.log('zmap', state.input.length, zMap.size);
+      const previousHighest = zMap.get(state.aluZ);
+      if (previousHighest) {
+        const inputAsNumber = Number(state.input.join(''));
+        const previousHighestAsNumber = Number(previousHighest.join(''));
+        if (inputAsNumber > previousHighestAsNumber) {
+          // new high score
+          zMap.set(state.aluZ, state.input);
+        } else {
+          // we've seen better, don't explore this state
+          return false;
+        }
+      } else {
+        // haven't seen this z before, update the map
+        zMap.set(state.aluZ, state.input);
+      }
+      return true;
+    });
+    // console.log(next);
 
-  //               const alu: ALU = {
-  //                 variables: {},
-  //                 input: fullInput.split('').map(Number),
-  //               };
+    stack.push(...next);
+  }
 
-  //               for (const line of lines) {
-  //                 const [instruction, o1, o2] = line.split(' ');
-  //                 executeInstruction(alu, instruction as Instruction, o1, o2);
-  //               }
-
-  //               if (alu.variables.x === 0) {
-  //                 console.log(fullInput);
-  //                 console.log(alu);
-  //               }
-
-  //               if (alu.variables.x === 0 && alu.variables.z === 0) {
-  //                 console.log('cool', fullInput);
-  //                 console.log(alu);
-  //               }
-  //             });
-  //           }
-  //         });
-  //       }
-  //     });
-  //   }
-  // });
-
-  return 0;
+  // woops
+  return -1;
 }
 
 function part2(lines: string[]): number {
-  return 0;
+  const lowestInputForZByInputLength = new Array(14).fill(undefined).map(
+    // key: z, value: lowest input that produced that z
+    () => new Map<number, number[]>()
+  );
+
+  const stack: State[] = [];
+  const initialState: State = {
+    aluZ: 0,
+    input: [],
+  };
+  stack.push(initialState);
+
+  while (stack.length > 0) {
+    const curr = stack.pop()!;
+
+    // console.log('checking state', curr);
+
+    if (curr.input.length === 14) {
+      // check done
+      if (curr.aluZ === 0) {
+        return Number(curr.input.join(''));
+      }
+      continue;
+    }
+
+    let next: State[] = [];
+
+    for (let newDigit = 9; newDigit >= 1; newDigit--) {
+      const newInput = [...curr.input, newDigit];
+      const alu: ALU = {
+        variables: {z: curr.aluZ},
+        input: [newDigit],
+      };
+      runNthDigitSlice(lines, alu, curr.input.length);
+
+      next.push({aluZ: alu.variables.z, input: newInput});
+    }
+
+    next = next.filter(state => {
+      // cull next states that we have better candidates for
+      const zMap = lowestInputForZByInputLength[state.input.length - 1];
+      // console.log('zmap', state.input.length, zMap.size);
+      const previousLowest = zMap.get(state.aluZ);
+      if (previousLowest) {
+        const inputAsNumber = Number(state.input.join(''));
+        const previousLowestAsNumber = Number(previousLowest.join(''));
+        if (inputAsNumber < previousLowestAsNumber) {
+          // new low score
+          zMap.set(state.aluZ, state.input);
+        } else {
+          // we've seen better, don't explore this state
+          // console.log(
+          //   'cullin',
+          //   state.aluZ,
+          //   inputAsNumber,
+          //   previousLowestAsNumber
+          // );
+          return false;
+        }
+      } else {
+        // haven't seen this z before, update the map
+        // console.log('adding', state.aluZ, Number(state.input.join('')));
+        zMap.set(state.aluZ, state.input);
+      }
+      return true;
+    });
+
+    // console.log(next);
+
+    stack.push(...next);
+  }
+
+  // woops
+  return -1;
 }
 
 const lines = fileMapSync('src/day24/input.txt', line => line);
