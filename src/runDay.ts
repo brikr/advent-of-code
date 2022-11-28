@@ -6,22 +6,22 @@ import {fetchInput, generateDaySource} from './utils/meta';
 
 async function main() {
   // Parse day from argv
-  const day = Number(last(process.argv));
+  const [year, day] = process.argv.slice(-2).map(Number);
 
-  if (isNaN(day)) {
-    console.error('Usage: npm run day <day>\n e.g.: npm run day 2');
+  if (isNaN(day) || isNaN(year)) {
+    console.error('Usage: npm run day <year> <day>\n e.g.: npm run day 2021 2');
     exit();
   }
 
   // Make the source file for that day if it doesn't exist
-  generateDaySource(day);
+  generateDaySource(year, day);
 
   // Fetch the input for the given day
   try {
-    await fetchInput(day);
+    await fetchInput(year, day);
   } catch (e) {
     // Assume any error here is due to 404 from puzzle not being live yet
-    console.error(`Day ${day} is not live yet!`);
+    console.error(`Year ${year} day ${day} is not live yet!`);
     return;
   }
 
@@ -29,7 +29,7 @@ async function main() {
   // code
   const dayString = dayToString(day);
   const startTime = performance.now();
-  require(`./day${dayString}/day${dayString}`);
+  require(`./${year}/day${dayString}/day${dayString}`);
   const endTime = performance.now();
   console.log(`ran in ${Math.floor(endTime - startTime) / 1000}s`);
 }

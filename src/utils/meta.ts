@@ -9,21 +9,23 @@ const EXAMPLE_REGEX = /for example.*\n.*<code>([^<]+)<\/code>/i;
 // Fetches the input from AOC servers and saves it to dayXX/input.txt
 // Also attempts to parse sample input from the problem page itself and saves to dayXX/input-test.txt
 // If the input file already exists, no download is performed unless force is true.
-export async function fetchInput(day: number, force = false) {
+export async function fetchInput(year: number, day: number, force = false) {
   // Check if the input file already exists
   const dayString = dayToString(day);
-  const inputAlreadyExists = existsSync(`src/day${dayString}/input.txt`);
+  const inputAlreadyExists = existsSync(
+    `src/${year}/day${dayString}/input.txt`
+  );
   if (inputAlreadyExists && !force) {
     console.debug(
-      `Input for day ${day} already exists on disk. Not downloading.`
+      `Input for year ${year} day ${day} already exists on disk. Not downloading.`
     );
     return;
   }
 
   // Download the input file
-  console.debug(`Downloading input for day ${day}.`);
+  console.debug(`Downloading input for year ${year} day ${day}.`);
   const response = await axios.get(
-    `https://adventofcode.com/2021/day/${day}/input`,
+    `https://adventofcode.com/${year}/day/${day}/input`,
     {
       headers: {
         cookie: `session=${environment.session}`,
@@ -32,12 +34,12 @@ export async function fetchInput(day: number, force = false) {
     }
   );
 
-  writeFileSync(`src/day${dayString}/input.txt`, response.data);
+  writeFileSync(`src/${year}/day${dayString}/input.txt`, response.data);
 
-  console.debug(`Parsing puzzle page for day ${day}.`);
+  console.debug(`Parsing puzzle page for year ${year} day ${day}.`);
   // Try to find a sample input from the problem description
   const puzzlePage = await axios.get<string>(
-    `https://adventofcode.com/2021/day/${day}`,
+    `https://adventofcode.com/${year}/day/${day}`,
     {responseType: 'document'}
   );
 
@@ -46,34 +48,42 @@ export async function fetchInput(day: number, force = false) {
 
   if (match) {
     console.debug(
-      `Found a probable sample block for day ${day}. Saving to input-test.txt.`
+      `Found a probable sample block for year ${year} day ${day}. Saving to input-test.txt.`
     );
-    writeFileSync(`src/day${dayString}/input-test.txt`, unescape(match));
+    writeFileSync(
+      `src/${year}/day${dayString}/input-test.txt`,
+      unescape(match)
+    );
   } else {
     console.debug(
-      `Couldn't find a good sample block for day ${day}. Making an empty input-test.txt for you.`
+      `Couldn't find a good sample block for year ${year} day ${day}. Making an empty input-test.txt for you.`
     );
-    writeFileSync(`src/day${dayString}/input-test.txt`, '');
+    writeFileSync(`src/${year}/day${dayString}/input-test.txt`, '');
   }
 }
 
 // Make the source file for a given day if it doesn't exist
-export function generateDaySource(day: number) {
+export function generateDaySource(year: number, day: number) {
   const dayString = dayToString(day);
 
-  const sourceExists = existsSync(`src/day${dayString}/day${dayString}.ts`);
+  const sourceExists = existsSync(
+    `src/${year}/day${dayString}/day${dayString}.ts`
+  );
 
   if (sourceExists) {
-    console.debug(`Source file for day ${day} exists. Not creating anything.`);
+    console.debug(
+      `Source file for year ${year} day ${day} exists. Not creating anything.`
+    );
   } else {
     console.debug(
-      `No source file for day ${day} exists. Creating from template.`
+      `No source file for year ${year} day ${day} exists. Creating from template.`
     );
 
     const template = readFileSync('src/day-template/day-template.ts')
       .toString()
+      .replace('YEAR_STRING', String(year))
       .replace('DAY_STRING', dayString);
-    mkdirSync(`src/day${dayString}`);
-    writeFileSync(`src/day${dayString}/day${dayString}.ts`, template);
+    mkdirSync(`src/${year}/day${dayString}`);
+    writeFileSync(`src/${year}/day${dayString}/day${dayString}.ts`, template);
   }
 }
