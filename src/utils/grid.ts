@@ -1,3 +1,5 @@
+import {cloneDeep} from 'lodash';
+
 export interface Point<T = never> {
   x: number;
   y: number;
@@ -48,6 +50,10 @@ export function pointsAround<T>(
   return around.filter(p => p.data !== undefined);
 }
 
+export function isEdge(arr: unknown[][], x: number, y: number): boolean {
+  return x === 0 || y === 0 || x === arr[0].length - 1 || y === arr.length - 1;
+}
+
 export function gridMin<T>(arr: T[][]): Point<T> {
   let minY = 0;
   let minX = 0;
@@ -66,6 +72,25 @@ export function gridMin<T>(arr: T[][]): Point<T> {
     y: minY,
     data: minVal,
   };
+}
+
+export function gridForEach<T>(
+  arr: T[][],
+  fn: (x: number, y: number, data: T) => unknown
+) {
+  for (let y = 0; y < arr.length; y++) {
+    for (let x = 0; x < arr[y].length; x++) {
+      fn(x, y, arr[y][x]);
+    }
+  }
+}
+
+export function getRow<T>(grid: T[][], row: number): T[] {
+  return cloneDeep(grid[row]);
+}
+
+export function getCol<T>(grid: T[][], col: number): T[] {
+  return grid.map(row => row[col]);
 }
 
 export function coordString<T>(point: Point<T>): string {
