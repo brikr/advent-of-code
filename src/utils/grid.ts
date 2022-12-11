@@ -6,7 +6,7 @@ export interface Point<T = never> {
   data: T;
 }
 
-type Direction = 'up' | 'down' | 'left' | 'right';
+export type Direction = 'up' | 'down' | 'left' | 'right';
 
 export function pointsAround<T>(
   map: T[][],
@@ -83,6 +83,29 @@ export function gridForEach<T>(
       fn(x, y, arr[y][x]);
     }
   }
+}
+
+export function pointsAdjacent<T>(
+  a: Point<T>,
+  b: Point<T>,
+  countDiagonals = false
+): boolean {
+  for (let dy = -1; dy <= 1; dy++) {
+    for (let dx = -1; dx <= 1; dx++) {
+      if (dx !== 0 && dy !== 0 && !countDiagonals) {
+        continue;
+      }
+      const p = {
+        x: a.x + dx,
+        y: a.y + dy,
+        data: undefined,
+      };
+      if (pointsEqual(b, p)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 export function getRow<T>(grid: T[][], row: number): T[] {
