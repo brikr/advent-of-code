@@ -42,9 +42,9 @@ export function fileLines(filename: string): string[] {
   return fileMapSync(filename, line => line);
 }
 
-export function fileAsGrid<T>(
+export function fileAsGrid<T = string>(
   filename: string,
-  castFunction: (input: string) => T,
+  castFunction: (input: string) => T = char => char as unknown as T,
   delimeter = ''
 ): T[][] {
   return fileMapSync(filename, line => line.split(delimeter).map(castFunction));
