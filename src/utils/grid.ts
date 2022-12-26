@@ -123,6 +123,41 @@ export function coordString(point: Point): string {
   return `${point.x},${point.y}`;
 }
 
+export function fromCoordString(coordString: string): Point {
+  const [x, y] = coordString.split(',').map(Number);
+  if (isNaN(x) || isNaN(y)) {
+    throw new Error(`Could not parse coord string ${coordString}`);
+  }
+  return {x, y};
+}
+
 export function pointsEqual(a: Point, b: Point): boolean {
   return a.x === b.x && a.y === b.y;
+}
+
+// includes from and to. return value isn't in from->to order
+export function pointsAlongLine(from: Point, to: Point): Point[] {
+  const points: Point[] = [];
+  if (from.x === to.x) {
+    // line along y
+    const {x} = from;
+    const [lower, upper] = [from, to].sort((a, b) => a.y - b.y);
+    for (let y = lower.y; y <= upper.y; y++) {
+      points.push({x, y});
+    }
+  } else if (from.y === to.y) {
+    // line along x
+    const {y} = from;
+    const [lower, upper] = [from, to].sort((a, b) => a.x - b.x);
+    for (let x = lower.x; x <= upper.x; x++) {
+      points.push({x, y});
+    }
+  } else {
+    throw new Error(
+      `Points ${coordString(from)} and ${coordString(
+        to
+      )} are not along a cardinal line`
+    );
+  }
+  return points;
 }
