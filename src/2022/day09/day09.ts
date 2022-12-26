@@ -1,6 +1,11 @@
 import {cloneDeep, last} from 'lodash';
 import {fileMapSync} from '../../utils/file';
-import {coordString, Direction, Point, pointsAdjacent} from '../../utils/grid';
+import {
+  coordString,
+  Direction,
+  PointWithData,
+  pointsAdjacent,
+} from '../../utils/grid';
 import {sign} from '../../utils/math';
 import {printSolution} from '../../utils/printSolution';
 
@@ -27,9 +32,9 @@ function instructionsToDirections(instructions: Instruction[]): Direction[] {
 }
 
 function performMove(
-  state: Point<undefined>[],
+  state: PointWithData<undefined>[],
   direction: Direction
-): Point<undefined>[] {
+): PointWithData<undefined>[] {
   const next = cloneDeep(state);
   const head = next[0];
 
@@ -69,7 +74,7 @@ function performMove(
 function part1(instructions: Instruction[]): number {
   const directions = instructionsToDirections(instructions);
 
-  const initialState: Point<undefined>[] = [
+  const initialState: PointWithData<undefined>[] = [
     {
       x: 0,
       y: 0,

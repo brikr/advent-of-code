@@ -1,7 +1,12 @@
 import {minBy, times} from 'lodash';
 import {transpose} from '../../utils/array';
 import {fileAsGrid} from '../../utils/file';
-import {Point, pointsAround, coordString, pointsEqual} from '../../utils/grid';
+import {
+  PointWithData,
+  pointsAround,
+  coordString,
+  pointsEqual,
+} from '../../utils/grid';
 import {MapWithDefault} from '../../utils/mapWithDefault';
 import {printSolution} from '../../utils/printSolution';
 import {SortedQueue} from '../../utils/sortedQueue';
@@ -54,7 +59,7 @@ function aStar(input: number[][]): number {
     y: input.length - 1,
     data: input[input.length - 1][input[0].length - 1],
   };
-  function heuristicScore(point: Point<number>): number {
+  function heuristicScore(point: PointWithData<number>): number {
     // heuristic is manhattan distance from finish
     // further from start = closer to finish
     return finish.x - point.x + (finish.y - point.y);
@@ -64,14 +69,19 @@ function aStar(input: number[][]): number {
   // how short a path from start to finish can be if it goes through n.
   const fScore = new MapWithDefault<string, number>(Infinity);
 
-  function comparePoints(a: Point<number>, b: Point<number>): number {
+  function comparePoints(
+    a: PointWithData<number>,
+    b: PointWithData<number>
+  ): number {
     return fScore.get(coordString(a)) - fScore.get(coordString(b));
   }
 
   // The set of discovered nodes that may need to be (re-)expanded.
   // Initially, only the start node is known.
   // This is usually implemented as a min-heap or priority queue rather than a hash-set.
-  const openSet = new SortedQueue<Point<number>>(comparePoints, [start]);
+  const openSet = new SortedQueue<PointWithData<number>>(comparePoints, [
+    start,
+  ]);
 
   // For node n, cameFrom[n] is the node immediately preceding it on the cheapest path from start
   // to n currently known.

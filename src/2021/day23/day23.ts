@@ -1,6 +1,11 @@
 import {cloneDeep} from 'lodash';
 import {fileAsGrid} from '../../utils/file';
-import {coordString, Point, pointsAround, pointsEqual} from '../../utils/grid';
+import {
+  coordString,
+  PointWithData,
+  pointsAround,
+  pointsEqual,
+} from '../../utils/grid';
 import {MapWithDefault} from '../../utils/mapWithDefault';
 import {printSolution} from '../../utils/printSolution';
 import {PriorityQueue} from '../../utils/priorityQueue';
@@ -99,8 +104,8 @@ const CHILLIN_SPOTS = [
 ];
 
 interface PathMatrixState {
-  location: Point<undefined>;
-  path: Point<undefined>[];
+  location: PointWithData<undefined>;
+  path: PointWithData<undefined>[];
 }
 
 function pathBfs(
@@ -145,8 +150,8 @@ function pathBfs(
 // key: string coordinates e.g. x1,y1;x2,y2, value: path coords
 function buildPathMatrix(
   grid: Space[][],
-  pathMatrix: Map<string, Point<undefined>[]>
-): Map<string, Point<undefined>[]> {
+  pathMatrix: Map<string, PointWithData<undefined>[]>
+): Map<string, PointWithData<undefined>[]> {
   pathMatrix.clear();
 
   const emptyGrid: Space[][] = grid.map(row =>
@@ -242,7 +247,7 @@ function getFuturesForCreature2(
   creatureY: number,
   creature: Creature
 ): Future[] {
-  const futureLocations: Point<undefined>[] = [];
+  const futureLocations: PointWithData<undefined>[] = [];
 
   // 3 states a creature could be in:
   if (isInRoom(creatureX, creatureY) && !isHome(prev, creatureX, creatureY)) {
@@ -318,7 +323,7 @@ function getFuturesForCreature2(
 function getFutures(state: State): Future[] {
   const futures: Future[] = [];
 
-  const creatures: Point<Creature>[] = [];
+  const creatures: PointWithData<Creature>[] = [];
 
   for (let y = 0; y < state.grid.length; y++) {
     for (let x = 0; x < state.grid[y].length; x++) {
@@ -528,5 +533,5 @@ function part2(grid: Space[][]): number {
 const grid = fileAsGrid<Space>('src/2021/day23/input.txt', c =>
   c === ' ' ? Space.EMPTY : (c as Space)
 );
-const PATH_MATRIX = new Map<string, Point<undefined>[]>();
+const PATH_MATRIX = new Map<string, PointWithData<undefined>[]>();
 printSolution(part1(grid), part2(grid));

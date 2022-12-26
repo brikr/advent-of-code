@@ -1,8 +1,11 @@
 import {cloneDeep} from 'lodash';
 
-export interface Point<T = never> {
+export interface Point {
   x: number;
   y: number;
+}
+
+export interface PointWithData<T = never> extends Point {
   data: T;
 }
 
@@ -13,8 +16,8 @@ export function pointsAround<T>(
   x: number,
   y: number,
   directions: Direction[] = ['up', 'down', 'left', 'right']
-): Point<T>[] {
-  const around: Point<T>[] = [];
+): PointWithData<T>[] {
+  const around: PointWithData<T>[] = [];
   if (directions.includes('up')) {
     const up = map[y - 1]?.[x];
     around.push({
@@ -54,7 +57,7 @@ export function isEdge(arr: unknown[][], x: number, y: number): boolean {
   return x === 0 || y === 0 || x === arr[0].length - 1 || y === arr.length - 1;
 }
 
-export function gridMin<T>(arr: T[][]): Point<T> {
+export function gridMin<T>(arr: T[][]): PointWithData<T> {
   let minY = 0;
   let minX = 0;
   let minVal = arr[minY][minX];
@@ -85,9 +88,9 @@ export function gridForEach<T>(
   }
 }
 
-export function pointsAdjacent<T>(
-  a: Point<T>,
-  b: Point<T>,
+export function pointsAdjacent(
+  a: Point,
+  b: Point,
   countDiagonals = false
 ): boolean {
   for (let dy = -1; dy <= 1; dy++) {
@@ -116,10 +119,10 @@ export function getCol<T>(grid: T[][], col: number): T[] {
   return grid.map(row => row[col]);
 }
 
-export function coordString<T>(point: Point<T>): string {
+export function coordString(point: Point): string {
   return `${point.x},${point.y}`;
 }
 
-export function pointsEqual<T>(a: Point<T>, b: Point<T>): boolean {
+export function pointsEqual(a: Point, b: Point): boolean {
   return a.x === b.x && a.y === b.y;
 }

@@ -1,18 +1,25 @@
 import {fileAsGrid} from '../../utils/file';
-import {coordString, Point, pointsAround, pointsEqual} from '../../utils/grid';
+import {
+  coordString,
+  PointWithData,
+  pointsAround,
+  pointsEqual,
+} from '../../utils/grid';
 import {MapWithDefault} from '../../utils/mapWithDefault';
 import {printSolution} from '../../utils/printSolution';
 import {SortedQueue} from '../../utils/sortedQueue';
 
 interface State {
-  currentLocation: Point<string>;
+  currentLocation: PointWithData<string>;
   visited: Set<string>;
   pathLength: number;
 }
 
-function findStartAndEnd(grid: string[][]): [Point<string>, Point<string>] {
-  let start: Point<string> | undefined;
-  let end: Point<string> | undefined;
+function findStartAndEnd(
+  grid: string[][]
+): [PointWithData<string>, PointWithData<string>] {
+  let start: PointWithData<string> | undefined;
+  let end: PointWithData<string> | undefined;
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
       if (grid[y][x] === 'S') {
@@ -86,10 +93,10 @@ function getFutures(grid: string[][], state: State): State[] {
 
 function aStar(
   grid: string[][],
-  start: Point<string>,
-  finish: Point<string>
+  start: PointWithData<string>,
+  finish: PointWithData<string>
 ): number {
-  function heuristicScore(point: Point<string>): number {
+  function heuristicScore(point: PointWithData<string>): number {
     // heuristic is manhattan distance from finish
     // further from start = closer to finish
     return finish.x - point.x + (finish.y - point.y);
@@ -99,14 +106,19 @@ function aStar(
   // how short a path from start to finish can be if it goes through n.
   const fScore = new MapWithDefault<string, number>(Infinity);
 
-  function comparePoints(a: Point<string>, b: Point<string>): number {
+  function comparePoints(
+    a: PointWithData<string>,
+    b: PointWithData<string>
+  ): number {
     return fScore.get(coordString(a)) - fScore.get(coordString(b));
   }
 
   // The set of discovered nodes that may need to be (re-)expanded.
   // Initially, only the start node is known.
   // This is usually implemented as a min-heap or priority queue rather than a hash-set.
-  const openSet = new SortedQueue<Point<string>>(comparePoints, [start]);
+  const openSet = new SortedQueue<PointWithData<string>>(comparePoints, [
+    start,
+  ]);
 
   // For node n, cameFrom[n] is the node immediately preceding it on the cheapest path from start
   // to n currently known.
@@ -165,7 +177,7 @@ function part1(grid: string[][]): number {
 
 function part2(grid: string[][]): number {
   const [_, finish] = findStartAndEnd(grid);
-  const initialPoints: Point<string>[] = [];
+  const initialPoints: PointWithData<string>[] = [];
   for (let y = 0; y < grid.length; y++) {
     for (let x = 0; x < grid[y].length; x++) {
       if (grid[y][x] === 'a') {
