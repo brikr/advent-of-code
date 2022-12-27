@@ -29,3 +29,41 @@ export function doesRangeOverlap(range1: Range, range2: Range) {
     return false;
   }
 }
+
+// "optimizes" an array of ranges, reducing the number of elements and ensuring none overlap
+export function optimizeRanges(ranges: Range[]): Range[] {
+  const sorted = ranges.sort((a, b) => a.min - b.min);
+  const optimized: Range[] = [];
+
+  let current = sorted[0];
+  let idx = 1;
+  while (idx < sorted.length) {
+    if (doesRangeFullyContainOther(current, sorted[idx])) {
+      // already accounted for, keep going (no-op)
+      // console.log('optimizeRanges:', current, 'fully contains', sorted[idx]);
+    } else if (
+      doesRangeOverlap(current, sorted[idx]) ||
+      isRangeContiguous(current, sorted[idx])
+    ) {
+      // expand current range and keep going
+      // console.log('optimizeRanges:', current, 'overlaps', sorted[idx]);
+      current.max = sorted[idx].max;
+      // console.log('  new current:', current);
+    } else {
+      // this range is over
+      // console.log('optimizeRanges:', current, 'is separate from', sorted[idx]);
+      optimized.push(current);
+      current = sorted[idx];
+    }
+    idx++;
+  }
+  optimized.push(current);
+
+  return optimized;
+}
+
+export function forEachInRange(range: Range, fn: (val: number) => unknown) {
+  for (let i = range.min; i <= range.max; i++) {
+    fn(i);
+  }
+}
