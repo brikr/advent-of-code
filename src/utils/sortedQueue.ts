@@ -16,21 +16,34 @@ export class SortedQueue<T> {
     this.compareFn = compareFn;
   }
 
-  public enqueue(item: T) {
-    let high = this.data.length - 1;
-    let low = 0;
-    while (low < high) {
-      const mid = Math.floor((low + high) / 2);
-      if (this.compareFn(this.data[mid], item) < 0) {
-        low = mid + 1;
-      } else {
-        high = mid;
-      }
-    }
-    // insert right after low
-    this.data.splice(low + 1, 0, item);
+  public enqueue(...items: T[]) {
+    for (const item of items) {
+      // console.log('  inserting', item);
 
-    // console.log(this.data);
+      let high = this.data.length - 1;
+      let low = 0;
+      while (low < high) {
+        const mid = Math.floor((low + high) / 2);
+        if (this.compareFn(this.data[mid], item) < 0) {
+          low = mid + 1;
+        } else {
+          high = mid;
+        }
+      }
+
+      // compare to low and insert accordingly
+      if (
+        this.data[low] === undefined ||
+        this.compareFn(this.data[low], item) > 0
+      ) {
+        // insert before low (or insert only item)
+        this.data.splice(low, 0, item);
+      } else {
+        // insert after low
+        this.data.splice(low + 1, 0, item);
+      }
+      // console.log('  data', this.data);
+    }
   }
 
   // removes and returns item with max value according to compare fn
