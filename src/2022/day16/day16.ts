@@ -1,4 +1,5 @@
-import {cloneDeep, initial, mapKeys, shuffle} from 'lodash';
+import {MapWithDefault} from './../../utils/mapWithDefault';
+import {cloneDeep} from 'lodash';
 import {dequeue} from '../../utils/array';
 import {fileMapSync} from '../../utils/file';
 import {printSolution} from '../../utils/printSolution';
@@ -26,8 +27,6 @@ interface State {
   // amount of flow if we did nothing for the rest of the time
   totalFlow: number;
   minutesPassed: number;
-  elephantCurrentValve: string;
-  elephantMinutesPassed: number;
 }
 
 // function checksum(state: State): string {
@@ -53,12 +52,22 @@ function optimizeValves(
       flowRate: fromValve.flowRate,
     };
 
+    if (fromValve.flowRate === 0 && fromValveName !== 'AA') {
+      // we're never gonna go here, so don't bother making an entry
+      continue;
+    }
+
     // console.log('creating optimized valves for', fromValveName, fromValve);
 
     bfs: for (const [toValveName, toValve] of valves.entries()) {
       if (toValveName === fromValveName) {
         // not considering self a neighbor means we will never open AA since we start there. in test input and my input
         // it has flow rate 0 so this works
+        continue bfs;
+      }
+
+      if (toValve.flowRate === 0) {
+        // we're never gonna go here, so don't bother making an entry
         continue bfs;
       }
 
@@ -112,22 +121,19 @@ function optimizeValves(
   return map;
 }
 
-function getFutures(state: State, elephantExists: boolean): State[] {
+function getFutures(state: State): State[] {
   const futures: State[] = [];
 
   for (const [neighbor, distance] of valves
     .get(state.currentValve)!
     .connections.entries()) {
+    // part 1: just a future where only we move
     if (state.openedValves.has(neighbor)) {
       // already opened, don't go back
       continue;
     }
 
     const neighborValve = valves.get(neighbor)!;
-    if (neighborValve.flowRate === 0) {
-      // never go to zero room
-      continue;
-    }
 
     // create a future where we go to this neighbor and open the valve
     const next = cloneDeep(state);
@@ -139,39 +145,6 @@ function getFutures(state: State, elephantExists: boolean): State[] {
 
     if (next.minutesPassed <= 30) {
       futures.push(next);
-    }
-  }
-
-  if (elephantExists) {
-    for (const [neighbor, distance] of valves
-      .get(state.elephantCurrentValve)!
-      .connections.entries()) {
-      if (state.openedValves.has(neighbor)) {
-        // already opened, don't go back
-        continue;
-      }
-
-      const neighborValve = valves.get(neighbor)!;
-      if (neighborValve.flowRate === 0) {
-        // never go to zero room
-        continue;
-      }
-
-      // create a future where we go to this neighbor and open the valve
-      const next = cloneDeep(state);
-      next.elephantCurrentValve = neighbor;
-      next.elephantMinutesPassed += distance; // for moving
-      next.openedValves.set(
-        next.elephantCurrentValve,
-        next.elephantMinutesPassed
-      );
-      next.elephantMinutesPassed++; // for opening
-      next.totalFlow +=
-        neighborValve.flowRate * (30 - next.elephantMinutesPassed);
-
-      if (next.elephantMinutesPassed <= 30) {
-        futures.push(next);
-      }
     }
   }
 
@@ -192,16 +165,16 @@ function compareStates(a: State, b: State): number {
   return a.totalFlow - b.totalFlow;
 }
 
-function findBestFlow(elephantExists: boolean): number {
+// rval key: opened valves, number: highest known total flow for those valves
+function findBestFlows(startingMinutes = 0): [Map<string, number>, number] {
   const initialState: State = {
     currentValve: 'AA',
-    elephantCurrentValve: 'AA',
     openedValves: new Map<string, number>(),
     totalFlow: 0,
-    minutesPassed: elephantExists ? 4 : 0,
-    elephantMinutesPassed: 4,
+    minutesPassed: startingMinutes,
   };
 
+  const allFlows = new MapWithDefault<string, number>(0);
   let highestFlow = 0;
 
   // const visited = new Set<string>();
@@ -224,34 +197,67 @@ function findBestFlow(elephantExists: boolean): number {
     const current = sortedQ.dequeueMax()!;
     // console.log('looking at', current);
 
-    if (current.minutesPassed === 30 && current.elephantMinutesPassed === 30) {
-      if (current.totalFlow > highestFlow) {
-        highestFlow = current.totalFlow;
-        console.log('new highest', highestFlow, current);
-        // return 0;
-      }
-    } else {
-      const futures = getFutures(current, elephantExists);
-      if (futures.length === 0 && current.totalFlow > highestFlow) {
-        // dead end route, check for highest here as well
-        highestFlow = current.totalFlow;
-        console.log('new highest', highestFlow, current);
-      }
-      sortedQ.enqueue(...futures);
-      // console.log('sortedQ', sortedQ);
-      // return 0;
+    const openedValvesStr = Array.from(current.openedValves.keys()).join(',');
+    if (current.totalFlow > allFlows.get(openedValvesStr)) {
+      // console.log('new highest for', openedValvesStr, current.totalFlow);
+      allFlows.set(openedValvesStr, current.totalFlow);
     }
+
+    const futures = getFutures(current);
+    if (futures.length === 0 && current.totalFlow > highestFlow) {
+      // dead end route, check for highest here as well
+      highestFlow = current.totalFlow;
+      console.log('new highest', highestFlow, current);
+      // if (TEST_MODE && highestFlow === 1707) {
+      //   return 1707;
+      // }
+    }
+    sortedQ.enqueue(...futures);
+    // console.log('sortedQ', sortedQ);
+    // return 0;
   }
 
-  return highestFlow;
+  return [allFlows, highestFlow];
 }
 
 function part1(): number {
-  return findBestFlow(false);
+  const [_, bestFlow] = findBestFlows();
+  return bestFlow;
 }
 
 function part2(): number {
-  return findBestFlow(true);
+  const [allFlows, _] = findBestFlows(4);
+
+  console.log(allFlows.size);
+
+  let highestSeen = 0;
+
+  let checked = 0;
+  for (const [myValves, myFlow] of allFlows.entries()) {
+    checked++;
+    if (checked % 100 === 0) {
+      console.log('checked', checked, 'of', allFlows.size);
+    }
+    const myValvesSet = new Set(myValves.split(','));
+
+    elephant: for (const [elephantValves, elephantFlow] of allFlows.entries()) {
+      // if the two valve sets are disjoint, then it's a possible solution
+      for (const elephantValve of elephantValves.split(',')) {
+        if (myValvesSet.has(elephantValve)) {
+          // sets are not disjoint
+          continue elephant;
+        }
+      }
+
+      // they are disjoint!
+      if (myFlow + elephantFlow > highestSeen) {
+        highestSeen = myFlow + elephantFlow;
+        console.log('new highest', myValves, elephantValves, highestSeen);
+      }
+    }
+  }
+
+  return highestSeen;
 }
 
 const unoptimizedValves = new Map<string, Valve>();
