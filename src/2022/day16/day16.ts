@@ -26,6 +26,8 @@ interface State {
   // amount of flow if we did nothing for the rest of the time
   totalFlow: number;
   minutesPassed: number;
+  elephantCurrentValve: string;
+  elephantMinutesPassed: number;
 }
 
 // function checksum(state: State): string {
@@ -110,7 +112,7 @@ function optimizeValves(
   return map;
 }
 
-function getFutures(state: State): State[] {
+function getFutures(state: State, elephantExists: boolean): State[] {
   const futures: State[] = [];
 
   for (const [neighbor, distance] of valves
@@ -135,15 +137,44 @@ function getFutures(state: State): State[] {
     next.minutesPassed++; // for opening
     next.totalFlow += neighborValve.flowRate * (30 - next.minutesPassed);
 
-    // if (next.openedValves.size === totalNonZeroValves) {
-    //   // every valve is opened. set minutes passed to 30 to end the path early
-    //   next.minutesPassed = 30;
-    // }
-
     if (next.minutesPassed <= 30) {
       futures.push(next);
     }
   }
+
+  if (elephantExists) {
+    for (const [neighbor, distance] of valves
+      .get(state.elephantCurrentValve)!
+      .connections.entries()) {
+      if (state.openedValves.has(neighbor)) {
+        // already opened, don't go back
+        continue;
+      }
+
+      const neighborValve = valves.get(neighbor)!;
+      if (neighborValve.flowRate === 0) {
+        // never go to zero room
+        continue;
+      }
+
+      // create a future where we go to this neighbor and open the valve
+      const next = cloneDeep(state);
+      next.elephantCurrentValve = neighbor;
+      next.elephantMinutesPassed += distance; // for moving
+      next.openedValves.set(
+        next.elephantCurrentValve,
+        next.elephantMinutesPassed
+      );
+      next.elephantMinutesPassed++; // for opening
+      next.totalFlow +=
+        neighborValve.flowRate * (30 - next.elephantMinutesPassed);
+
+      if (next.elephantMinutesPassed <= 30) {
+        futures.push(next);
+      }
+    }
+  }
+
   return futures;
 }
 
@@ -161,12 +192,14 @@ function compareStates(a: State, b: State): number {
   return a.totalFlow - b.totalFlow;
 }
 
-function part1(): number {
+function findBestFlow(elephantExists: boolean): number {
   const initialState: State = {
     currentValve: 'AA',
+    elephantCurrentValve: 'AA',
     openedValves: new Map<string, number>(),
     totalFlow: 0,
-    minutesPassed: 0,
+    minutesPassed: elephantExists ? 4 : 0,
+    elephantMinutesPassed: 4,
   };
 
   let highestFlow = 0;
@@ -191,14 +224,14 @@ function part1(): number {
     const current = sortedQ.dequeueMax()!;
     // console.log('looking at', current);
 
-    if (current.minutesPassed === 30) {
+    if (current.minutesPassed === 30 && current.elephantMinutesPassed === 30) {
       if (current.totalFlow > highestFlow) {
         highestFlow = current.totalFlow;
         console.log('new highest', highestFlow, current);
         // return 0;
       }
     } else {
-      const futures = getFutures(current);
+      const futures = getFutures(current, elephantExists);
       if (futures.length === 0 && current.totalFlow > highestFlow) {
         // dead end route, check for highest here as well
         highestFlow = current.totalFlow;
@@ -213,8 +246,12 @@ function part1(): number {
   return highestFlow;
 }
 
+function part1(): number {
+  return findBestFlow(false);
+}
+
 function part2(): number {
-  return 0;
+  return findBestFlow(true);
 }
 
 const unoptimizedValves = new Map<string, Valve>();
@@ -232,6 +269,6 @@ fileMapSync(`src/2022/day16/input${TEST_MODE ? '-test' : ''}.txt`, line => {
   }
 });
 const valves = optimizeValves(unoptimizedValves);
-console.log(valves);
+// console.log(valves);
 
 printSolution(part1(), part2());
