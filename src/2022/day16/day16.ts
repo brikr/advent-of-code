@@ -1,5 +1,5 @@
 import {MapWithDefault} from './../../utils/mapWithDefault';
-import {cloneDeep} from 'lodash';
+import {cloneDeep, sortBy} from 'lodash';
 import {dequeue} from '../../utils/array';
 import {fileMapSync} from '../../utils/file';
 import {printSolution} from '../../utils/printSolution';
@@ -183,16 +183,16 @@ function findBestFlows(startingMinutes = 0): [Map<string, number>, number] {
   let statesChecked = 0;
   while (sortedQ.size > 0) {
     statesChecked++;
-    if (TEST_MODE || statesChecked % 100000 === 0) {
-      console.log(
-        'states checked',
-        statesChecked,
-        'sortedQ length',
-        sortedQ.size,
-        'highest seen',
-        highestFlow
-      );
-    }
+    // if (TEST_MODE || statesChecked % 100000 === 0) {
+    //   console.log(
+    //     'states checked',
+    //     statesChecked,
+    //     'sortedQ length',
+    //     sortedQ.size,
+    //     'highest seen',
+    //     highestFlow
+    //   );
+    // }
 
     const current = sortedQ.dequeueMax()!;
     // console.log('looking at', current);
@@ -207,7 +207,7 @@ function findBestFlows(startingMinutes = 0): [Map<string, number>, number] {
     if (futures.length === 0 && current.totalFlow > highestFlow) {
       // dead end route, check for highest here as well
       highestFlow = current.totalFlow;
-      console.log('new highest', highestFlow, current);
+      // console.log('new highest', highestFlow, current);
       // if (TEST_MODE && highestFlow === 1707) {
       //   return 1707;
       // }
@@ -225,39 +225,98 @@ function part1(): number {
   return bestFlow;
 }
 
-function part2(): number {
-  const [allFlows, _] = findBestFlows(4);
+interface BestFlowState {
+  i: number;
+  j: number;
+}
 
-  console.log(allFlows.size);
+function bestFlowStateStringify({i, j}: BestFlowState): string {
+  return `${i},${j}`;
+}
 
-  let highestSeen = 0;
+function isDisjoint(a: string, b: string): boolean {
+  const setA = new Set<string>(a.split(','));
+  const arrB = b.split(',');
 
-  let checked = 0;
-  for (const [myValves, myFlow] of allFlows.entries()) {
-    checked++;
-    if (checked % 100 === 0) {
-      console.log('checked', checked, 'of', allFlows.size);
-    }
-    const myValvesSet = new Set(myValves.split(','));
-
-    elephant: for (const [elephantValves, elephantFlow] of allFlows.entries()) {
-      // if the two valve sets are disjoint, then it's a possible solution
-      for (const elephantValve of elephantValves.split(',')) {
-        if (myValvesSet.has(elephantValve)) {
-          // sets are not disjoint
-          continue elephant;
-        }
-      }
-
-      // they are disjoint!
-      if (myFlow + elephantFlow > highestSeen) {
-        highestSeen = myFlow + elephantFlow;
-        console.log('new highest', myValves, elephantValves, highestSeen);
-      }
+  for (const valve of arrB) {
+    if (setA.has(valve)) {
+      return false;
     }
   }
 
-  return highestSeen;
+  return true;
+}
+
+function part2(): number {
+  const [allFlows, _] = findBestFlows(4);
+
+  // console.log('there are', allFlows.size, 'possible flow sets');
+
+  const sortedFlows = Array.from(allFlows.entries()).sort(
+    ([_a, flowA], [_b, flowB]) => flowB - flowA
+  );
+
+  const initialState: BestFlowState = {
+    i: 0,
+    j: 1,
+  };
+
+  const sortedQ = new SortedQueue<BestFlowState>(
+    (a, b) =>
+      sortedFlows[a.i][1] +
+      sortedFlows[a.j][1] -
+      (sortedFlows[b.i][1] + sortedFlows[b.j][1])
+  );
+  sortedQ.enqueue(initialState);
+
+  const visited = new Set<string>();
+
+  while (sortedQ.size > 0) {
+    const {i, j} = sortedQ.dequeueMax()!;
+
+    // if ((sortedFlows[i][1] + sortedFlows[j][1]) % 100 === 0) {
+    //   console.log(
+    //     'checking',
+    //     sortedFlows[i][1] + sortedFlows[j][1],
+    //     i,
+    //     sortedFlows[i],
+    //     j,
+    //     sortedFlows[j]
+    //   );
+    // }
+
+    if (
+      i >= sortedFlows.length ||
+      j >= sortedFlows.length ||
+      i === j ||
+      visited.has(bestFlowStateStringify({i, j}))
+    ) {
+      continue;
+    }
+
+    visited.add(bestFlowStateStringify({i, j}));
+
+    if (isDisjoint(sortedFlows[i][0], sortedFlows[j][0])) {
+      // answer found!
+      // console.log('  disjoint!');
+      return sortedFlows[i][1] + sortedFlows[j][1];
+    }
+
+    const futures = [
+      {
+        i,
+        j: j + 1,
+      },
+      {
+        i: i + 1,
+        j,
+      },
+    ];
+    sortedQ.enqueue(...futures);
+  }
+
+  // woops
+  return 0;
 }
 
 const unoptimizedValves = new Map<string, Valve>();
