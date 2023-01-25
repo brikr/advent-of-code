@@ -11,7 +11,7 @@ import {
   mergeAreas,
   pointToString,
   splitArea,
-} from '../../utils/3dspace';
+} from '../../utils/3DSpace';
 import {fileMapSync} from '../../utils/file';
 import {printSolution} from '../../utils/printSolution';
 import {Range} from '../../utils/range';

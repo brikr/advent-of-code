@@ -29,6 +29,35 @@ export function pointFromString(s: string): Point3D {
   return {x, y, z};
 }
 
+export function pointsAround(p: Point3D, includeCorners = true): Point3D[] {
+  const around: Point3D[] = [];
+  if (includeCorners) {
+    for (let x = p.x - 1; x <= p.x + 1; x++) {
+      for (let y = p.y - 1; y <= p.y + 1; y++) {
+        for (let z = p.z - 1; z <= p.z + 1; z++) {
+          if (x === p.x && y === p.y && z === p.z) {
+            continue;
+          }
+          around.push({x, y, z});
+        }
+      }
+    }
+  } else {
+    around.push(
+      // x adjacent
+      {...p, x: p.x - 1},
+      {...p, x: p.x + 1},
+      // y adjacent
+      {...p, y: p.y - 1},
+      {...p, y: p.y + 1},
+      // z adjacent
+      {...p, z: p.z - 1},
+      {...p, z: p.z + 1}
+    );
+  }
+  return around;
+}
+
 export function areaToString({x, y, z}: Area3D): string {
   return `${x.min}..${x.max},${y.min}..${y.max},${z.min}..${z.max}`;
 }

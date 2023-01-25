@@ -1,4 +1,4 @@
-import {Point3D} from '../../utils/3dspace';
+import {Point3D} from '../../utils/3DSpace';
 import {fileLines} from '../../utils/file';
 import {MapWithDefault} from '../../utils/mapWithDefault';
 import {printSolution} from '../../utils/printSolution';
