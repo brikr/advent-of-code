@@ -165,3 +165,11 @@ export function pointsAlongLine(from: Point, to: Point): Point[] {
 export function manhattanDistance(a: Point, b: Point): number {
   return Math.abs(b.x - a.x) + Math.abs(b.y - a.y);
 }
+
+export function addPoints(a: Point, b: Point): Point {
+  return {x: a.x + b.x, y: a.y + b.y};
+}
+
+export function subtractPoints(a: Point, b: Point): Point {
+  return {x: a.x - b.x, y: a.y - b.y};
+}

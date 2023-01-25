@@ -1,4 +1,3 @@
-import {last} from 'lodash';
 import {performance} from 'perf_hooks';
 import {exit} from 'process';
 import {dayToString} from './utils/dayString';
