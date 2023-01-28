@@ -10,6 +10,9 @@ export class SortedQueue<T> {
   get size(): number {
     return this.data.length;
   }
+  get length(): number {
+    return this.data.length;
+  }
 
   constructor(compareFn: Comparator<T>, initialValues: T[] = []) {
     this.data = [...initialValues].sort(compareFn);
@@ -46,12 +49,20 @@ export class SortedQueue<T> {
     }
   }
 
+  public push(...items: T[]) {
+    return this.enqueue(...items);
+  }
+
   // removes and returns item with max value according to compare fn
   public dequeue(): T | undefined {
     return this.data.pop();
   }
 
   public dequeueMax(): T | undefined {
+    return this.dequeue();
+  }
+
+  public pop(): T | undefined {
     return this.dequeue();
   }
 
