@@ -31,6 +31,7 @@ export async function fetchInput(year: number, day: number, force = false) {
         cookie: `session=${environment.session}`,
       },
       responseType: 'text',
+      transformResponse: data => data,
     }
   );
 
