@@ -1,4 +1,4 @@
-import {cloneDeep} from 'lodash';
+import {cloneDeep, times} from 'lodash';
 
 export interface Point {
   x: number;
@@ -10,6 +10,29 @@ export interface PointWithData<T = never> extends Point {
 }
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
+export const CLOCKWISE: Direction[] = ['up', 'right', 'down', 'left'];
+export const COUNTERCLOCKWISE: Direction[] = ['up', 'left', 'down', 'right'];
+export const OPPOSITE_DIRECTION = {
+  up: 'down',
+  down: 'up',
+  left: 'right',
+  right: 'left',
+} as const;
+export const DIRECTION_DELTAS = {
+  up: {
+    x: 0,
+    y: -1,
+  },
+  down: {
+    x: 0,
+    y: 1,
+  },
+  left: {
+    x: -1,
+    y: 0,
+  },
+  right: {x: 1, y: 0},
+} as const;
 
 export function pointsAround<T>(
   map: T[][],
@@ -172,4 +195,25 @@ export function addPoints(a: Point, b: Point): Point {
 
 export function subtractPoints(a: Point, b: Point): Point {
   return {x: a.x - b.x, y: a.y - b.y};
+}
+
+export function multiplyPoints(a: Point, b: Point): Point {
+  return {x: a.x * b.x, y: a.y * b.y};
+}
+
+// perform `rotations` clockwise rotations around `origin`
+export function rotateClockwise(
+  p: Point,
+  rotations = 1,
+  origin: Point = {x: 0, y: 0}
+): Point {
+  let localPoint = subtractPoints(p, origin);
+  times(rotations, () => {
+    // clockwise rotation: swap x and y, and then negate x
+    localPoint = {
+      x: -localPoint.y,
+      y: localPoint.x,
+    };
+  });
+  return addPoints(localPoint, origin);
 }

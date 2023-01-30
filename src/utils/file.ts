@@ -24,7 +24,7 @@ export async function fileMap<T>(
 
 export function fileMapSync<T>(
   filename: string,
-  iteratee: (line: string, index: number) => T
+  iteratee: (line: string, index: number, lines: string[]) => T
 ): T[] {
   const lines = readFileSync(filename, {encoding: 'utf8', flag: 'r'}).split(
     '\n'
