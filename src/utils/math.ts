@@ -21,3 +21,7 @@ export function gcd(m: number, n: number): number {
 export function lcm(m: number, n: number): number {
   return Math.floor(m / gcd(m, n)) * n;
 }
+
+export function logBase(val: number, base: number): number {
+  return Math.log(val) / Math.log(base);
+}
