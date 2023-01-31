@@ -76,6 +76,34 @@ export function pointsAround<T>(
   return around.filter(p => p.data !== undefined);
 }
 
+// returns all points adjacent to p on an integer grid
+// points are ordered as follows
+// if diagonals are included:
+// 012
+// 3P4
+// 567
+//  if diagonals are excluded:
+//  0
+// 1P2
+//  3
+export function allAdjacentPoints(p: Point, includeDiagonals = true): Point[] {
+  const rval: Point[] = [];
+  for (let y = -1; y <= 1; y++) {
+    for (let x = -1; x <= 1; x++) {
+      if (x === 0 && y === 0) {
+        // ignore self
+        continue;
+      }
+      if (!includeDiagonals && Math.abs(x) + Math.abs(y) > 1) {
+        // ignore diagonals
+        continue;
+      }
+      rval.push(addPoints(p, {x, y}));
+    }
+  }
+  return rval;
+}
+
 export function isEdge(arr: unknown[][], x: number, y: number): boolean {
   return x === 0 || y === 0 || x === arr[0].length - 1 || y === arr.length - 1;
 }
