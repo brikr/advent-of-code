@@ -1,16 +1,32 @@
 import {fileMapSync} from '../../utils/file';
 import {printSolution} from '../../utils/printSolution';
 
-function part1(lines: string[]): number {
-  return 0;
+function fuelRequired(mass: number): number {
+  return Math.floor(mass / 3) - 2;
 }
 
-function part2(lines: string[]): number {
-  return 0;
+function part1(masses: number[]): number {
+  let total = 0;
+  for (const mass of masses) {
+    const fuel = fuelRequired(mass);
+    total += fuel;
+  }
+  return total;
 }
 
-const lines = fileMapSync(
-  'src/2019/day01/input-test.txt',
-  line => line
-);
-printSolution(part1(lines), part2(lines));
+function part2(masses: number[]): number {
+  let total = 0;
+  for (const mass of masses) {
+    let totalFuel = 0;
+    let fuel = fuelRequired(mass);
+    while (fuel > 0) {
+      totalFuel += fuel;
+      fuel = fuelRequired(fuel);
+    }
+    total += totalFuel;
+  }
+  return total;
+}
+
+const masses = fileMapSync('src/2019/day01/input.txt', Number);
+printSolution(part1(masses), part2(masses));
