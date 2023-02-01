@@ -25,3 +25,8 @@ export function lcm(m: number, n: number): number {
 export function logBase(val: number, base: number): number {
   return Math.log(val) / Math.log(base);
 }
+
+export function getDigit(num: number, digit: number): number {
+  const digits = String(num).split('').reverse();
+  return Number(digits[digit] ?? 0);
+}

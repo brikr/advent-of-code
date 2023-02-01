@@ -1,16 +1,23 @@
-import {fileMapSync} from '../../utils/file';
+import {IntcodeComputer} from './../intcode/intcode';
+import {fileLines} from '../../utils/file';
 import {printSolution} from '../../utils/printSolution';
+import {last} from 'lodash';
 
-function part1(lines: string[]): number {
-  return 0;
+function part1(program: string): number {
+  const computer = new IntcodeComputer(program);
+  // computer.debug = true;
+  computer.pushInput(1);
+  computer.runProgram();
+  return last(computer.takeAllOutputs())!;
 }
 
-function part2(lines: string[]): number {
-  return 0;
+function part2(program: string): number {
+  const computer = new IntcodeComputer(program);
+  // computer.debug = true;
+  computer.pushInput(5);
+  computer.runProgram();
+  return last(computer.takeAllOutputs())!;
 }
 
-const lines = fileMapSync(
-  'src/2019/day05/input-test.txt',
-  line => line
-);
-printSolution(part1(lines), part2(lines));
+const program = fileLines('src/2019/day05/input.txt')[0];
+printSolution(part1(program), part2(program));
