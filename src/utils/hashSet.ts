@@ -18,6 +18,13 @@ export class HashSet<T> {
     return this;
   }
 
+  addAll(...items: T[]): this {
+    for (const item of items) {
+      this.add(item);
+    }
+    return this;
+  }
+
   clear() {
     this._map.clear();
   }
