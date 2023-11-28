@@ -6,6 +6,7 @@
     "start": "npm run compile && node build/day$npm_config_solution/day$npm_config_solution.js",
     "start:dev": "nodemon -L --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/day${npm_config_solution}/day${npm_config_solution}.ts\"",
     "day": "ts-node src/runDay.ts",
+    "day-cpp": "ts-node src/setupDayCpp.ts",
     "day:dev": "nodemon -L --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node src/runDay.ts\"",
     "fix": "gts fix",
     "pretest": "npm run compile",
