@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 int part_one(const std::vector<std::string>& lines) {
   int total = 0;
   for (const std::string& line : lines) {

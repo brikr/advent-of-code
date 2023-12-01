@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 int part_one(std::vector<std::string> lines) { return 0; }
 
 int part_two(std::vector<std::string> lines) { return 0; }
