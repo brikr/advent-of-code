@@ -12,7 +12,7 @@ int part_one(std::vector<std::string> lines) { return 0; }
 int part_two(std::vector<std::string> lines) { return 0; }
 
 int main() {
-  std::vector<std::string> lines = file_lines_str("input.txt");
+  std::vector<std::string> lines = file_lines<std::string>("input.txt");
 
   auto start = std::chrono::high_resolution_clock::now();
 

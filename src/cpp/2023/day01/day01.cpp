@@ -10,9 +10,9 @@
 
 using namespace std;
 
-int part_one(std::vector<std::string>& lines) {
+int part_one(const std::vector<std::string>& lines) {
   int total = 0;
-  for (std::string& line : lines) {
+  for (const std::string& line : lines) {
     int firstDigit = -1;
     int lastDigit = -1;
     for (char ch : line) {
@@ -31,14 +31,14 @@ int part_one(std::vector<std::string>& lines) {
   return total;
 }
 
-int part_two(std::vector<std::string>& lines) {
+int part_two(const std::vector<std::string>& lines) {
   std::map<std::string, int> wordToDigit = {
       {"one", 1}, {"two", 2},   {"three", 3}, {"four", 4}, {"five", 5},
       {"six", 6}, {"seven", 7}, {"eight", 8}, {"nine", 9}};
 
   int total = 0;
 
-  for (std::string& line : lines) {
+  for (const std::string& line : lines) {
     // Turn all digits into words
     std::string str = line;
     for (const auto& pair : wordToDigit) {
@@ -85,7 +85,7 @@ int part_two(std::vector<std::string>& lines) {
 }
 
 int main() {
-  std::vector<std::string> lines = file_lines_str("input.txt");
+  std::vector<std::string> lines = file_lines<std::string>("input.txt");
 
   auto start = std::chrono::high_resolution_clock::now();
 

@@ -7,11 +7,10 @@
       "args": [
         "-fdiagnostics-color=always",
         "-g",
-        "${file}",
         "-I",
         "${workspaceFolder}/src/cpp/utils",
-        "-g",
-        "${workspaceFolder}/src/cpp/utils/*.cpp",
+        // "${workspaceFolder}/src/cpp/utils/*.cpp",
+        "${file}",
         "-o",
         "${fileDirname}/${fileBasenameNoExtension}.out"
       ],
