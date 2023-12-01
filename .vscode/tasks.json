@@ -8,6 +8,9 @@
         "-fdiagnostics-color=always",
         "-g",
         "${file}",
+        "-I",
+        "${workspaceFolder}/src/cpp/utils",
+        "-g",
         "${workspaceFolder}/src/cpp/utils/*.cpp",
         "-o",
         "${fileDirname}/${fileBasenameNoExtension}.out"

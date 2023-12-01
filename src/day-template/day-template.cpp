@@ -1,15 +1,15 @@
+#include <file.h>
+
 #include <chrono>
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include "../../utils/file.h"
-
 using namespace std;
 
-int part_one(std::vector<int> lines) { return 0; }
+int part_one(std::vector<std::string> lines) { return 0; }
 
-int part_two(std::vector<int> lines) { return 0; }
+int part_two(std::vector<std::string> lines) { return 0; }
 
 int main() {
   std::vector<std::string> lines = file_lines_str("input.txt");
