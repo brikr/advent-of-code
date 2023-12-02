@@ -9,7 +9,7 @@
         "-g",
         "-I",
         "${workspaceFolder}/src/cpp/utils",
-        // "${workspaceFolder}/src/cpp/utils/*.cpp",
+        "${workspaceFolder}/src/cpp/utils/*.cpp",
         "${file}",
         "-o",
         "${fileDirname}/${fileBasenameNoExtension}.out"

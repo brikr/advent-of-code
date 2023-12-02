@@ -5,7 +5,7 @@
 #include <vector>
 
 template <typename T>
-std::vector<T> file_lines(const std::string& filename);
+std::vector<T> fileLines(const std::string& filename);
 
 #include "file.tpp"
 

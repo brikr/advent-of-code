@@ -4,11 +4,10 @@
 #include <chrono>
 #include <iostream>
 #include <regex>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
-int part_one(const std::vector<std::string>& lines) {
+int partOne(const std::vector<std::string>& lines) {
   int total = 0;
   for (const std::string& line : lines) {
     int firstDigit = -1;
@@ -29,7 +28,7 @@ int part_one(const std::vector<std::string>& lines) {
   return total;
 }
 
-int part_two(const std::vector<std::string>& lines) {
+int partTwo(const std::vector<std::string>& lines) {
   std::map<std::string, int> wordToDigit = {
       {"one", 1}, {"two", 2},   {"three", 3}, {"four", 4}, {"five", 5},
       {"six", 6}, {"seven", 7}, {"eight", 8}, {"nine", 9}};
@@ -83,14 +82,14 @@ int part_two(const std::vector<std::string>& lines) {
 }
 
 int main() {
-  std::vector<std::string> lines = file_lines<std::string>("input.txt");
+  std::vector<std::string> lines = fileLines<std::string>("input.txt");
 
   auto start = std::chrono::high_resolution_clock::now();
 
   std::cout << "Part 1:\n";
-  std::cout << part_one(lines) << std::endl;
+  std::cout << partOne(lines) << std::endl;
   std::cout << "Part 2:\n";
-  std::cout << part_two(lines) << std::endl;
+  std::cout << partTwo(lines) << std::endl;
 
   auto end = std::chrono::high_resolution_clock::now();
   auto duration =

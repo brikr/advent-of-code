@@ -6,7 +6,20 @@
 #include <sstream>
 
 template <typename T>
-std::vector<T> file_lines(const std::string& filename) {
+T strToTemplate(const std::string& str) {
+  std::stringstream ss(str);
+  T casted;
+  ss >> casted;
+  return casted;
+}
+
+template <>
+std::string strToTemplate<std::string>(const std::string& str) {
+  return str;
+}
+
+template <typename T>
+std::vector<T> fileLines(const std::string& filename) {
   std::ifstream input_file(filename);
 
   if (!input_file.is_open()) {
@@ -17,9 +30,7 @@ std::vector<T> file_lines(const std::string& filename) {
   std::vector<T> lines{};
   std::string line;
   while (std::getline(input_file, line)) {
-    std::istringstream iss(line);
-    T casted;
-    iss >> casted;
+    T casted = strToTemplate<T>(line);
     lines.push_back(casted);
   }
 
