@@ -1,3 +1,5 @@
+#include <stringextras.h>
+
 #include <sstream>
 #include <string>
 #include <vector>

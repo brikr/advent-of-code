@@ -5,6 +5,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "file.h"
+
 template <typename T>
 T strToTemplate(const std::string& str) {
   std::stringstream ss(str);
