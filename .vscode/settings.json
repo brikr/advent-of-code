@@ -57,6 +57,7 @@
     "*.tpp": "cpp",
     "future": "cpp",
     "mutex": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "set": "cpp"
   }
 }
