@@ -69,12 +69,12 @@ int main() {
 
   std::vector<Card> cards{};
   for (const auto& line : lines) {
-    std::vector<std::string> split = strSplit(line, ':');
+    std::vector<std::string> split = strSplit(line, ": ");
 
-    int cardNumber = std::stoi(strSplit(split[0], ' ').back());
-    std::vector<std::string> numberSets = strSplit(split[1], '|');
-    std::vector<std::string> winningNumberStrs = strSplit(numberSets[0], ' ');
-    std::vector<std::string> heldNumberStrs = strSplit(numberSets[1], ' ');
+    int cardNumber = std::stoi(strSplit(split[0], " ").back());
+    std::vector<std::string> numberSets = strSplit(split[1], " | ");
+    std::vector<std::string> winningNumberStrs = strSplit(numberSets[0], " ");
+    std::vector<std::string> heldNumberStrs = strSplit(numberSets[1], " ");
 
     std::set<int> winners{};
     for (const auto& numOrBlank : winningNumberStrs) {

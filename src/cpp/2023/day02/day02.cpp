@@ -68,10 +68,10 @@ int main() {
           Game game;
           game.id = id;
 
-          std::vector<std::string> subsetStrs = strSplit(rest, ';');
+          std::vector<std::string> subsetStrs = strSplit(rest, ";");
 
           for (const auto& subsetStr : subsetStrs) {
-            std::vector<std::string> cubeDraws = strSplit(subsetStr, ',');
+            std::vector<std::string> cubeDraws = strSplit(subsetStr, ",");
             Subset subset{0, 0, 0};
             for (const auto& cubeDraw : cubeDraws) {
               std::smatch drawMatch;
