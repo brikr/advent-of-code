@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 
-int partOne(std::vector<std::string>& lines) { return 0; }
+int partOne(const std::vector<std::string>& lines) { return 0; }
 
-int partTwo(std::vector<std::string>& lines) { return 0; }
+int partTwo(const std::vector<std::string>& lines) { return 0; }
 
 int main() {
   std::vector<std::string> lines = fileLines<std::string>("input-test.txt");
