@@ -1,5 +1,8 @@
 #include <grid.h>
 
+#include <string>
+#include <vector>
+
 bool Point2D::isAdjacent(const Point2D &other) const {
   return this->isAdjacent(other, true);
 }

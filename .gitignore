@@ -4,6 +4,7 @@ node_modules/
 # built files
 build/
 *.out
+*.out.*
 
 # environment file that contains secrets
 environment.ts
