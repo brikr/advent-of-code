@@ -28,3 +28,17 @@ std::vector<std::string> strSplit(const std::string& str,
 
   return tokens;
 }
+
+std::string strJoin(const std::vector<std::string>& vec,
+                    const std::string& separator) {
+  std::ostringstream oss;
+
+  for (int i = 0; i < vec.size(); i++) {
+    oss << vec[i];
+    if (i != vec.size() - 1) {
+      oss << separator;
+    }
+  }
+
+  return oss.str();
+}
