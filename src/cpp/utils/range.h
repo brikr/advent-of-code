@@ -10,8 +10,15 @@ class Range {
   Range(Number min, Number max) : min(min), max(max){};
 
   bool contains(Number num);
-  bool overlaps(Range &other);
+  bool contains(const Range<Number> &other);
+  bool overlaps(const Range<Number> &other);
+  bool contiguousWith(const Range<Number> &other);
+  Range<Number> intersection(const Range<Number> &other);
 };
+
+template <typename Number>
+std::vector<Range<Number>> optimizeRanges(
+    const std::vector<Range<Number>> &ranges);
 
 #include "range.tpp"
 
