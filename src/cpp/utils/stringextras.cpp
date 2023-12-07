@@ -42,3 +42,16 @@ std::string strJoin(const std::vector<std::string>& vec,
 
   return oss.str();
 }
+
+// !! this can infinite loop if `find` contains `replace`! beware!
+std::string strReplace(const std::string& original, const std::string& find,
+                       const std::string& replace) {
+  std::string rval = original;
+
+  size_t found;
+  while ((found = rval.find(find)) != std::string::npos) {
+    rval.replace(found, find.length(), replace);
+  }
+
+  return rval;
+}
