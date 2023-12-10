@@ -39,6 +39,14 @@ Point2D Point2D::operator-(const Point2D &other) const {
   return Point2D(this->x - other.x, this->y - other.y);
 }
 
+Point2D Point2D::operator*(int multiplicand) const {
+  return Point2D(this->x * multiplicand, this->y * multiplicand);
+}
+
+Point2D Point2D::operator/(int divisor) const {
+  return Point2D(this->x / divisor, this->y / divisor);
+}
+
 // Only needed to make this efficiently work as a key to std::map. Choosing
 // row-major so that iteration matches input files
 bool Point2D::operator<(const Point2D &other) const {

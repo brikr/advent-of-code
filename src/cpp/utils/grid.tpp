@@ -1,6 +1,7 @@
 #ifndef GRID_TPP
 #define GRID_TPP
 
+#include <iostream>
 #include <map>
 #include <vector>
 
@@ -19,13 +20,33 @@ Grid2D<T>::Grid2D(bool excludeDiagonals) {
 }
 
 template <typename T>
-T Grid2D<T>::operator[](const Point2D &index) const {
-  return this->map[index];
+T &Grid2D<T>::operator[](const Point2D &point) {
+  return this->map[point];
 }
 
 template <typename T>
-T &Grid2D<T>::operator[](const Point2D &index) {
-  return this->map[index];
+auto Grid2D<T>::at(const Point2D &point) const {
+  return this->map.at(point);
+}
+
+template <typename T>
+auto Grid2D<T>::find(const Point2D &point) const {
+  return this->map.find(point);
+}
+
+template <typename T>
+auto Grid2D<T>::begin() const {
+  return this->map.begin();
+}
+
+template <typename T>
+auto Grid2D<T>::rbegin() const {
+  return this->map.rbegin();
+}
+
+template <typename T>
+auto Grid2D<T>::end() const {
+  return this->map.end();
 }
 
 template <typename T>
@@ -44,22 +65,22 @@ std::map<Point2D, T> Grid2D<T>::pointsAdjacent(const Point2D &point) const {
       adjacent[other] = found->second;
     }
   }
+
   return adjacent;
 }
 
 template <typename T>
-auto Grid2D<T>::begin() const {
-  return this->map.begin();
-}
+void Grid2D<T>::print() const {
+  int currentY = this->map.begin()->first.y;
+  for (const auto &pair : this->map) {
+    if (pair.first.y != currentY) {
+      std::cout << std::endl;
+      currentY = pair.first.y;
+    }
 
-template <typename T>
-auto Grid2D<T>::rbegin() const {
-  return this->map.rbegin();
-}
-
-template <typename T>
-auto Grid2D<T>::end() const {
-  return this->map.end();
+    std::cout << pair.second;
+  }
+  std::cout << std::endl;
 }
 
 #endif

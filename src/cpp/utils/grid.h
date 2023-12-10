@@ -15,6 +15,8 @@ class Point2D {
   bool operator!=(const Point2D &other) const;
   Point2D operator+(const Point2D &other) const;
   Point2D operator-(const Point2D &other) const;
+  Point2D operator*(int multiplicand) const;
+  Point2D operator/(int divisor) const;
   bool operator<(const Point2D &other) const;
 
   bool isAdjacent(const Point2D &other) const;
@@ -34,21 +36,24 @@ const Point2D DELTA_DOWN_RIGHT{1, 1};
 template <typename T>
 class Grid2D {
  public:
+  bool excludeDiagonals;
+
   Grid2D();
   Grid2D(bool excludeDiagonals);
 
-  T operator[](const Point2D &index) const;
-  T &operator[](const Point2D &index);
+  T &operator[](const Point2D &point);
 
+  auto at(const Point2D &point) const;
+  auto find(const Point2D &point) const;
   auto begin() const;
   auto rbegin() const;
   auto end() const;
 
   std::map<Point2D, T> pointsAdjacent(const Point2D &point) const;
+  void print() const;
 
  private:
   std::map<Point2D, T> map;
-  bool excludeDiagonals;
 };
 
 Grid2D<char> linesToGrid(std::vector<std::string> &lines);
