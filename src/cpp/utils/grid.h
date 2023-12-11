@@ -56,7 +56,7 @@ class Grid2D {
   std::map<Point2D, T> map;
 };
 
-Grid2D<char> linesToGrid(std::vector<std::string> &lines);
+Grid2D<char> linesToGrid(const std::vector<std::string> &lines);
 
 #include "grid.tpp"
 

@@ -57,7 +57,7 @@ bool Point2D::operator<(const Point2D &other) const {
   }
 }
 
-Grid2D<char> linesToGrid(std::vector<std::string> &lines) {
+Grid2D<char> linesToGrid(const std::vector<std::string> &lines) {
   Grid2D<char> grid{};
   for (int y = 0; y < lines.size(); y++) {
     std::string line = lines[y];
