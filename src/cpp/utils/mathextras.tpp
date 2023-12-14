@@ -40,4 +40,15 @@ Number gcd(std::vector<Number> vec) {
   return rval;
 }
 
+template <typename Number, class Iterator>
+Number sum(Iterator start, Iterator end) {
+  Number total = 0;
+
+  for (auto it = start; it != end; it++) {
+    total += *it;
+  }
+
+  return total;
+}
+
 #endif
