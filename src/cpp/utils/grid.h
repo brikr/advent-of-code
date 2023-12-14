@@ -1,6 +1,8 @@
 #ifndef GRID_H
 #define GRID_H
 
+#include <range.h>
+
 #include <map>
 #include <vector>
 
@@ -36,24 +38,31 @@ const Point2D DELTA_DOWN_RIGHT{1, 1};
 template <typename T>
 class Grid2D {
  public:
-  bool excludeDiagonals;
+  bool excludeDiagonals = false;
+  Range<int> xBounds{0, 0};
+  Range<int> yBounds{0, 0};
 
   Grid2D();
   Grid2D(bool excludeDiagonals);
 
   T &operator[](const Point2D &point);
+  bool operator==(const Grid2D<T> &other);
 
   auto at(const Point2D &point) const;
   auto find(const Point2D &point) const;
   auto begin() const;
   auto rbegin() const;
   auto end() const;
+  auto size() const;
 
   std::map<Point2D, T> pointsAdjacent(const Point2D &point) const;
+  Grid2D<T> subRegion(Range<int> xBounds, Range<int> yBounds) const;
+  std::vector<T> row(int y) const;
+  std::vector<T> col(int x) const;
   void print() const;
 
  private:
-  std::map<Point2D, T> map;
+  std::map<Point2D, T> map{};
 };
 
 Grid2D<char> linesToGrid(const std::vector<std::string> &lines);

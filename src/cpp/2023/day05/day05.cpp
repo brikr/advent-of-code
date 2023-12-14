@@ -143,7 +143,7 @@ int main() {
       for (int i = 0; i < numsVec.size(); i += 2) {
         long start = std::stol(numsVec[i]);
         long len = std::stol(numsVec[i + 1]);
-        Range range{start, start + len - 1};
+        Range<long> range{start, start + len - 1};
         input2.seedRanges.push_back(range);
       }
     } else {

@@ -1,6 +1,9 @@
 #ifndef GRID_TPP
 #define GRID_TPP
 
+#include <range.h>
+
+#include <algorithm>
 #include <iostream>
 #include <map>
 #include <vector>
@@ -8,10 +11,7 @@
 #include "grid.h"
 
 template <typename T>
-Grid2D<T>::Grid2D() {
-  this->excludeDiagonals = false;
-  this->map = std::map<Point2D, T>{};
-}
+Grid2D<T>::Grid2D() {}
 
 template <typename T>
 Grid2D<T>::Grid2D(bool excludeDiagonals) {
@@ -21,7 +21,39 @@ Grid2D<T>::Grid2D(bool excludeDiagonals) {
 
 template <typename T>
 T &Grid2D<T>::operator[](const Point2D &point) {
+  if (this->size() == 0) {
+    this->xBounds.min = point.x;
+    this->xBounds.max = point.x;
+    this->yBounds.min = point.y;
+    this->yBounds.max = point.y;
+  } else {
+    this->xBounds.min = std::min(this->xBounds.min, point.x);
+    this->xBounds.max = std::max(this->xBounds.max, point.x);
+    this->yBounds.min = std::min(this->yBounds.min, point.y);
+    this->yBounds.max = std::max(this->yBounds.max, point.y);
+  }
+
   return this->map[point];
+}
+
+template <typename T>
+bool Grid2D<T>::operator==(const Grid2D<T> &other) {
+  if (this->size() != other.size()) {
+    return false;
+  }
+
+  for (const auto &pair : *this) {
+    auto it = other.find(pair.first);
+    if (it == other.end()) {
+      return false;
+    }
+
+    if (it->second != pair.second) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 template <typename T>
@@ -50,6 +82,11 @@ auto Grid2D<T>::end() const {
 }
 
 template <typename T>
+auto Grid2D<T>::size() const {
+  return this->map.size();
+}
+
+template <typename T>
 std::map<Point2D, T> Grid2D<T>::pointsAdjacent(const Point2D &point) const {
   std::map<Point2D, T> adjacent{};
 
@@ -67,6 +104,38 @@ std::map<Point2D, T> Grid2D<T>::pointsAdjacent(const Point2D &point) const {
   }
 
   return adjacent;
+}
+
+template <typename T>
+Grid2D<T> Grid2D<T>::subRegion(Range<int> xBounds, Range<int> yBounds) const {
+  Grid2D<T> newGrid{};
+  newGrid.excludeDiagonals = this->excludeDiagonals;
+
+  for (int y = yBounds.min; y <= yBounds.max; y++) {
+    for (int x = xBounds.min; x <= xBounds.max; x++) {
+      newGrid[{x, y}] = this->at({x, y});
+    }
+  }
+
+  return newGrid;
+}
+
+template <typename T>
+std::vector<T> Grid2D<T>::row(int y) const {
+  std::vector<T> vec{};
+  for (int x = this->xBounds.min; x <= this->xBounds.max; x++) {
+    vec.push_back(this->at({x, y}));
+  }
+  return vec;
+}
+
+template <typename T>
+std::vector<T> Grid2D<T>::col(int x) const {
+  std::vector<T> vec{};
+  for (int y = this->yBounds.min; y <= this->yBounds.max; y++) {
+    vec.push_back(this->at({x, y}));
+  }
+  return vec;
 }
 
 template <typename T>

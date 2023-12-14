@@ -2,6 +2,7 @@
 #define RANGE_TPP
 
 #include <algorithm>
+#include <vector>
 
 #include "range.h"
 

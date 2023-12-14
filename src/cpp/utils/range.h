@@ -1,12 +1,15 @@
 #ifndef RANGE_H
 #define RANGE_H
 
+#include <vector>
+
 template <typename Number>
 class Range {
  public:
   Number min;
   Number max;
 
+  Range() : min(0), max(0){};
   Range(Number min, Number max) : min(min), max(max){};
 
   bool contains(Number num);
