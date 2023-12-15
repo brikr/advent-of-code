@@ -45,8 +45,9 @@ class Grid2D {
   Grid2D();
   Grid2D(bool excludeDiagonals);
 
+  Grid2D<T> operator=(const Grid2D<T> &other);
   T &operator[](const Point2D &point);
-  bool operator==(const Grid2D<T> &other);
+  bool operator==(const Grid2D<T> &other) const;
 
   auto at(const Point2D &point) const;
   auto find(const Point2D &point) const;

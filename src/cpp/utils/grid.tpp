@@ -20,6 +20,20 @@ Grid2D<T>::Grid2D(bool excludeDiagonals) {
 }
 
 template <typename T>
+Grid2D<T> Grid2D<T>::operator=(const Grid2D<T> &other) {
+  this->map.clear();
+  this->excludeDiagonals = other.excludeDiagonals;
+
+  for (int y = other.yBounds.min; y <= other.yBounds.max; y++) {
+    for (int x = other.xBounds.min; x <= other.xBounds.max; x++) {
+      this->map[{x, y}] = other.at({x, y});
+    }
+  }
+
+  return *this;
+}
+
+template <typename T>
 T &Grid2D<T>::operator[](const Point2D &point) {
   if (this->size() == 0) {
     this->xBounds.min = point.x;
@@ -37,7 +51,7 @@ T &Grid2D<T>::operator[](const Point2D &point) {
 }
 
 template <typename T>
-bool Grid2D<T>::operator==(const Grid2D<T> &other) {
+bool Grid2D<T>::operator==(const Grid2D<T> &other) const {
   if (this->size() != other.size()) {
     return false;
   }
