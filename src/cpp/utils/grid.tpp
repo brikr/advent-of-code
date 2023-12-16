@@ -101,6 +101,11 @@ auto Grid2D<T>::size() const {
 }
 
 template <typename T>
+bool Grid2D<T>::inBounds(const Point2D &point) const {
+  return this->xBounds.contains(point.x) && this->yBounds.contains(point.y);
+}
+
+template <typename T>
 std::map<Point2D, T> Grid2D<T>::pointsAdjacent(const Point2D &point) const {
   std::map<Point2D, T> adjacent{};
 

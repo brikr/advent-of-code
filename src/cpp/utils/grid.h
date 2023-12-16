@@ -11,6 +11,7 @@ class Point2D {
   int x;
   int y;
 
+  Point2D() : x(0), y(0){};
   Point2D(int x, int y) : x(x), y(y){};
 
   bool operator==(const Point2D &other) const;
@@ -56,6 +57,7 @@ class Grid2D {
   auto end() const;
   auto size() const;
 
+  bool inBounds(const Point2D &point) const;
   std::map<Point2D, T> pointsAdjacent(const Point2D &point) const;
   Grid2D<T> subRegion(Range<int> xBounds, Range<int> yBounds) const;
   std::vector<T> row(int y) const;

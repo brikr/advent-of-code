@@ -12,11 +12,11 @@ class Range {
   Range() : min(0), max(0){};
   Range(Number min, Number max) : min(min), max(max){};
 
-  bool contains(Number num);
-  bool contains(const Range<Number> &other);
-  bool overlaps(const Range<Number> &other);
-  bool contiguousWith(const Range<Number> &other);
-  Range<Number> intersection(const Range<Number> &other);
+  bool contains(Number num) const;
+  bool contains(const Range<Number> &other) const;
+  bool overlaps(const Range<Number> &other) const;
+  bool contiguousWith(const Range<Number> &other) const;
+  Range<Number> intersection(const Range<Number> &other) const;
 };
 
 template <typename Number>

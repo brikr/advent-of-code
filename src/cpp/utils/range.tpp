@@ -7,17 +7,17 @@
 #include "range.h"
 
 template <typename Number>
-bool Range<Number>::contains(Number num) {
+bool Range<Number>::contains(Number num) const {
   return num >= this->min && num <= this->max;
 }
 
 template <typename Number>
-bool Range<Number>::contains(const Range<Number> &other) {
+bool Range<Number>::contains(const Range<Number> &other) const {
   return this->min <= other.min && this->max >= other.max;
 }
 
 template <typename Number>
-bool Range<Number>::overlaps(const Range<Number> &other) {
+bool Range<Number>::overlaps(const Range<Number> &other) const {
   if (this->min <= other.max && this->max >= other.min) {
     return true;
   } else if (other.min <= this->max && other.max >= this->min) {
@@ -28,12 +28,12 @@ bool Range<Number>::overlaps(const Range<Number> &other) {
 }
 
 template <typename Number>
-bool Range<Number>::contiguousWith(const Range<Number> &other) {
+bool Range<Number>::contiguousWith(const Range<Number> &other) const {
   return this->min == other.max + 1 || this->max == other.min - 1;
 }
 
 template <typename Number>
-Range<Number> Range<Number>::intersection(const Range<Number> &other) {
+Range<Number> Range<Number>::intersection(const Range<Number> &other) const {
   Number min, max;
   min = std::max(this->min, other.min);
   max = std::min(this->max, other.max);
