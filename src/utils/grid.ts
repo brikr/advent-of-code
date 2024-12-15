@@ -31,8 +31,33 @@ export const DIRECTION_DELTAS = {
     x: -1,
     y: 0,
   },
-  right: {x: 1, y: 0},
+  right: {
+    x: 1,
+    y: 0,
+  },
 } as const;
+export const DIRECTION_DELTAS_DIAGONALS = {
+  upLeft: {
+    x: -1,
+    y: -1,
+  },
+  upRight: {
+    x: 1,
+    y: -1,
+  },
+  downLeft: {
+    x: -1,
+    y: 1,
+  },
+  downRight: {
+    x: 1,
+    y: 1,
+  },
+};
+export const DIRECTION_DELTAS_ALL = {
+  ...DIRECTION_DELTAS,
+  ...DIRECTION_DELTAS_DIAGONALS,
+};
 
 export function pointsAround<T>(
   map: T[][],
@@ -108,6 +133,10 @@ export function isEdge(arr: unknown[][], x: number, y: number): boolean {
   return x === 0 || y === 0 || x === arr[0].length - 1 || y === arr.length - 1;
 }
 
+export function isInBounds(arr: unknown[][], x: number, y: number): boolean {
+  return x >= 0 && y >= 0 && x <= arr[0].length - 1 && y <= arr.length - 1;
+}
+
 export function gridMin<T>(arr: T[][]): PointWithData<T> {
   let minY = 0;
   let minX = 0;
@@ -168,6 +197,14 @@ export function getRow<T>(grid: T[][], row: number): T[] {
 
 export function getCol<T>(grid: T[][], col: number): T[] {
   return grid.map(row => row[col]);
+}
+
+export function getData<T>(grid: T[][], x: number, y: number): T | undefined {
+  if (isInBounds(grid, x, y)) {
+    return grid[y][x];
+  } else {
+    return undefined;
+  }
 }
 
 export function coordString(point: Point): string {
