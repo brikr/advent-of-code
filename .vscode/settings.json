@@ -60,5 +60,6 @@
     "thread": "cpp",
     "set": "cpp",
     "list": "cpp"
-  }
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
