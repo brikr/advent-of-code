@@ -282,3 +282,14 @@ export function rotateClockwise(
   });
   return addPoints(localPoint, origin);
 }
+
+export function printGrid<T>(grid: T[][]) {
+  let str = '';
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[y].length; x++) {
+      str += grid[y][x];
+    }
+    str += '\n';
+  }
+  console.log(str);
+}
