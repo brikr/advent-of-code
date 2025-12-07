@@ -1,6 +1,16 @@
+import {max} from 'lodash';
+
 export interface Range {
   min: number;
   max: number;
+}
+
+export function isInRange(val: number, range: Range, inclusive = true) {
+  if (inclusive) {
+    return val >= range.min && val <= range.max;
+  } else {
+    return val > range.min && val < range.max;
+  }
 }
 
 // true if range1 and range2 perfectly touch and do not overlap
@@ -39,7 +49,9 @@ export function optimizeRanges(ranges: Range[]): Range[] {
   let idx = 1;
   while (idx < sorted.length) {
     if (doesRangeFullyContainOther(current, sorted[idx])) {
-      // already accounted for, keep going (no-op)
+      // grow to match the larger of the two ranges
+      current.max = max([current.max, sorted[idx].max])!;
+      // we're not worried about min since we know current has the lower min due to sorting
       // console.log('optimizeRanges:', current, 'fully contains', sorted[idx]);
     } else if (
       doesRangeOverlap(current, sorted[idx]) ||
