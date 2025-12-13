@@ -30,3 +30,7 @@ export function getDigit(num: number, digit: number): number {
   const digits = String(num).split('').reverse();
   return Number(digits[digit] ?? 0);
 }
+
+export function product(arr: number[]): number {
+  return arr.reduce((a, b) => a * b, 1);
+}
